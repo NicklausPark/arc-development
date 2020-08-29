@@ -167,7 +167,13 @@ export default function Header(props) {
 
   const routes = [
     { name: 'Home', link: '/', activeIndex: 0 },
-    { name: 'Services', link: '/services', activeIndex: 1 },
+    {
+      name: 'Services',
+      link: '/services',
+      activeIndex: 1,
+      arioOwns: anchorEl ? 'true' : undefined,
+      mouseOver: (event) => handleClick(event),
+    },
     { name: 'The Revolution', link: '/revolution', activeIndex: 2 },
     { name: 'About Us', link: '/about', activeIndex: 3 },
     { name: 'Contact Us', link: '/contact', activeIndex: 4 },
@@ -176,11 +182,14 @@ export default function Header(props) {
   useEffect(() => {
     [...menuOptions, ...routes].forEach((router) => {
       switch (window.location.pathname) {
-        case `${route.link}`:
-          if (value !== route.activeIndex) {
-            setValue(route.activeIndex);
-            if (route.selectedIndex && route.selectedIndex !== selectedIndex) {
-              setSelectedIndex(route.selectedIndex);
+        case `${routes.link}`:
+          if (value !== routes.activeIndex) {
+            setValue(routes.activeIndex);
+            if (
+              routes.selectedIndex &&
+              routes.selectedIndex !== selectedIndex
+            ) {
+              setSelectedIndex(routes.selectedIndex);
             }
           }
           break;
@@ -198,34 +207,17 @@ export default function Header(props) {
         indicatorColor='primary'
         className={classes.tabContainer}
       >
-        <Tab className={classes.tab} component={Link} label='Home' to='/' />
-        <Tab
-          aria-owns={anchorEl ? 'simple-menu' : undefined}
-          aria-haspopup={anchorEl ? 'true' : undefined}
-          className={classes.tab}
-          component={Link}
-          onMouseOver={(event) => handleClick(event)}
-          label='Services'
-          to='/services'
-        />
-        <Tab
-          className={classes.tab}
-          component={Link}
-          label='The Revolution'
-          to='/revolution'
-        />
-        <Tab
-          className={classes.tab}
-          component={Link}
-          label='About Us'
-          to='/about'
-        />
-        <Tab
-          className={classes.tab}
-          component={Link}
-          label='Contact Us'
-          to='contact'
-        />
+        {routes.map((route, index) => (
+          <Tab
+            className={classes.tab}
+            component={Link}
+            to={route.link}
+            label={route.name}
+            aria-owns={route.ariaOwns}
+            aria-haspopup={route.ariaPopup}
+            onMouseOver={route.mouseOver}
+          />
+        ))}
       </Tabs>
       <Button variant='contained' color='secondary' className={classes.button}>
         Free Estimate

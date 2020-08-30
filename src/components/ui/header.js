@@ -37,14 +37,20 @@ const useStyles = makeStyles((theme) => ({
   toolbarMargin: {
     ...theme.mixins.toolbar,
     marginBottom: '3em',
-  },
-  logo: {
-    height: '8em',
     [theme.breakpoints.down('md')]: {
       marginBottom: '2em',
     },
     [theme.breakpoints.down('xs')]: {
       marginBottom: '1.25em',
+    },
+  },
+  logo: {
+    height: '8em',
+    [theme.breakpoints.down('md')]: {
+      height: '7em',
+    },
+    [theme.breakpoints.down('xs')]: {
+      height: '5.5em',
     },
   },
   logoContainer: {
@@ -102,6 +108,9 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerItemSelected: {
     opacity: 1,
+  },
+  appBar: {
+    zIndex: theme.zIndex.modal + 1,
   },
 }));
 
@@ -171,7 +180,7 @@ export default function Header(props) {
       name: 'Services',
       link: '/services',
       activeIndex: 1,
-      arioOwns: anchorEl ? 'true' : undefined,
+      ariaOwns: anchorEl ? 'true' : undefined,
       mouseOver: (event) => handleClick(event),
     },
     { name: 'The Revolution', link: '/revolution', activeIndex: 2 },
@@ -209,6 +218,7 @@ export default function Header(props) {
       >
         {routes.map((route, index) => (
           <Tab
+            key={`${route}${index}`}
             className={classes.tab}
             component={Link}
             to={route.link}
@@ -230,6 +240,7 @@ export default function Header(props) {
         classes={{ paper: classes.menu }}
         MenuListProps={{ onMouseLeave: handleClose }}
         elevation={0}
+        keepMounted
       >
         {menuOptions.map((option, i) => (
           <MenuItem
@@ -259,117 +270,34 @@ export default function Header(props) {
         onOpen={() => setOpenDrawer(true)}
         classes={{ paper: classes.drawer }}
       >
+        <div className={classes.toolbarMargin} />
         <List disablePadding>
-          <ListItem
-            onClick={() => {
-              setOpenDrawer(false);
-              setValue(0);
-            }}
-            divider
-            button
-            component={Link}
-            to='/'
-            selected={value === 0}
-          >
-            <ListItemText
-              className={
-                value === 0
-                  ? [classes.drawerItem, classes.drawerItemSelected]
-                  : classes.drawerItem
-              }
-              disableTypography
+          {routes.map((route) => (
+            <ListItem
+              divider
+              key={`${route}${route.activeIndex}`}
+              button
+              component={Link}
+              to={route.link}
+              selected={value === route.activeIndex}
+              onClick={() => {
+                setOpenDrawer(false);
+                setValue(route.activeIndex);
+              }}
             >
-              Home
-            </ListItemText>
-          </ListItem>
-          <ListItem
-            onClick={() => {
-              setOpenDrawer(false);
-              setValue(1);
-            }}
-            divider
-            button
-            component={Link}
-            to='/services'
-            selected={value === 1}
-          >
-            <ListItemText
-              className={
-                value === 1
-                  ? [classes.drawerItem, classes.drawerItemSelected]
-                  : classes.drawerItem
-              }
-              disableTypography
-            >
-              Services
-            </ListItemText>
-          </ListItem>
-          <ListItem
-            onClick={() => {
-              setOpenDrawer(false);
-              setValue(2);
-            }}
-            divider
-            button
-            component={Link}
-            to='/revolution'
-            selected={value === 2}
-          >
-            <ListItemText
-              className={
-                value === 2
-                  ? [classes.drawerItem, classes.drawerItemSelected]
-                  : classes.drawerItem
-              }
-              disableTypography
-            >
-              The Revolution
-            </ListItemText>
-          </ListItem>
-          <ListItem
-            onClick={() => {
-              setOpenDrawer(false);
-              setValue(3);
-            }}
-            divider
-            button
-            component={Link}
-            to='/about'
-            selected={value === 3}
-          >
-            <ListItemText
-              className={
-                value === 3
-                  ? [classes.drawerItem, classes.drawerItemSelected]
-                  : classes.drawerItem
-              }
-              disableTypography
-            >
-              About
-            </ListItemText>
-          </ListItem>
-          <ListItem
-            onClick={() => {
-              setOpenDrawer(false);
-              setValue(4);
-            }}
-            divider
-            button
-            component={Link}
-            to='/contact'
-            selected={value === 4}
-          >
-            <ListItemText
-              className={
-                value === 4
-                  ? [classes.drawerItem, classes.drawerItemSelected]
-                  : classes.drawerItem
-              }
-              disableTypography
-            >
-              Contact Us
-            </ListItemText>
-          </ListItem>
+              <ListItemText
+                className={
+                  value === route.activeIndex
+                    ? [classes.drawerItem, classes.drawerItemSelected]
+                    : classes.drawerItem
+                }
+                disableTypography
+              >
+                {route.name}
+              </ListItemText>
+            </ListItem>
+          ))}
+
           <ListItem
             onClick={() => {
               setOpenDrawer(false);
@@ -408,7 +336,7 @@ export default function Header(props) {
   return (
     <React.Fragment>
       <ElevationScroll>
-        <AppBar position='fixed' color='primary'>
+        <AppBar className={classes.appBar} position='fixed' color='primary'>
           <Toolbar disableGutters>
             <Button
               component={Link}
